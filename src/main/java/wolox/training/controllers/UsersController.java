@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import wolox.training.exceptions.BookAlreadyOwnedException;
 import wolox.training.exceptions.BookNotFoundException;
+import wolox.training.exceptions.UserIdMismatchException;
 import wolox.training.exceptions.UserNotFoundException;
 import wolox.training.models.Book;
 import wolox.training.models.Users;
@@ -34,49 +35,38 @@ public class UsersController {
     return usersRepository.findAll();
   }
 
-  @PostMapping("/create")
+  @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public Users create(@RequestBody Users user) {
     return usersRepository.save(user);
   }
 
-  @GetMapping("/details/{id}")
+  @GetMapping("/{id}")
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public Users findOne(@PathVariable int id) throws UserNotFoundException {
-    Optional<Users> user = usersRepository.findById(id);
-    if (user.isPresent()) {
-      return user.get();
-    }
-    throw new UserNotFoundException("User not found");
+  public Users findOne(@PathVariable long id) throws UserNotFoundException {
+    return usersRepository.findById(id).orElseThrow(UserNotFoundException::new);
   }
 
-  @DeleteMapping("/delete/{id}")
+  @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public void delete(@PathVariable int id) throws UserNotFoundException {
-    if (usersRepository.findById(id).isPresent()) {
-      usersRepository.deleteById(id);
-    }
-    else throw new UserNotFoundException("User not found");
+  public void delete(@PathVariable long id) throws UserNotFoundException {
+    usersRepository.findById(id).orElseThrow(UserNotFoundException::new);
+    usersRepository.deleteById(id);
   }
 
-  @PutMapping("/update")
-  public Users updateBook(@RequestBody Users user) throws UserNotFoundException {
-    if (!usersRepository.findById(user.getId()).isPresent()) {
-      throw new UserNotFoundException("User not found");
+  @PutMapping("/{id}")
+  public Users update(@RequestBody Users user, @PathVariable long id) throws UserIdMismatchException {
+    if (user.getId() != id) {
+      throw new UserIdMismatchException();
     }
     return usersRepository.save(user);
   }
 
   @PostMapping("/{userId}/addBook/{bookId}")
-  public Users addBook(@PathVariable int userId, @PathVariable int bookId) throws UserNotFoundException, BookAlreadyOwnedException, BookNotFoundException {
-    Optional<Users> user = usersRepository.findById(userId);
-    if (!user.isPresent())
-      throw new UserNotFoundException("User not found");
-    Optional<Book> book = bookRepository.findById(bookId);
-    if (!book.isPresent())
-      throw new BookNotFoundException("Book not found");
-    user.get().addBook(book.get());
-    usersRepository.save(user.get());
-    return user.get();
+  public Users addBook(@PathVariable long userId, @PathVariable long bookId) throws UserNotFoundException, BookAlreadyOwnedException, BookNotFoundException {
+    Users user = usersRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    Book book = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
+    user.addBook(book);
+    return usersRepository.save(user);
   }
 }
