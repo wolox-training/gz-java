@@ -1,10 +1,14 @@
 package wolox.training.models;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Vector;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 
 @Entity
 public class Book {
@@ -40,8 +44,11 @@ public class Book {
   @Column(nullable = false)
   private String isbn;
 
-  public Book() {
+  @ManyToMany(mappedBy = "books")
+  private List<Users> users;
 
+  public Book() {
+    this.users = new Vector<Users>();
   }
 
   public long getId() {
@@ -118,5 +125,9 @@ public class Book {
 
   public void setAuthor(String author) {
     this.author = author;
+  }
+
+  public List<Users> getUsers() {
+    return (List<Users>) Collections.unmodifiableList(this.users);
   }
 }
