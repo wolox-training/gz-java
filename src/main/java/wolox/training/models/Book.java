@@ -11,7 +11,7 @@ public class Book {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private int id;
+  private long id;
 
   @Column
   private String genre;
@@ -44,7 +44,7 @@ public class Book {
 
   }
 
-  public int getId() {
+  public long getId() {
     return this.id;
   }
 
