@@ -11,7 +11,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+<<<<<<< HEAD
 import wolox.training.exceptions.BookAlreadyOwnedException;
+=======
+>>>>>>> Added Users model
 
 @Entity
 public class Users {
