@@ -10,8 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import wolox.training.exceptions.BookAlreadyOwnedException;
 
@@ -31,10 +29,7 @@ public class Users {
   @Column(nullable = false)
   private LocalDate birthday;
 
-  @ManyToMany(cascade = CascadeType.ALL)
-  @JoinTable(name = "book_user",
-      joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"),
-      inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
+  @ManyToMany(cascade = { CascadeType.REFRESH, CascadeType.MERGE })
   private List<Book> books;
 
   public Users() {
@@ -73,13 +68,13 @@ public class Users {
     return (List<Book>) Collections.unmodifiableList(this.books);
   }
 
-  public void addBook(Book book) throws BookAlreadyOwnedException {
+  public boolean addBook(Book book) throws BookAlreadyOwnedException {
     if (this.books.contains(book))
       throw new BookAlreadyOwnedException();
-    this.books.add(book);
+    return this.books.add(book);
   }
 
-  public void removeBook(Book book) {
-    this.books.remove(book);
+  public boolean removeBook(Book book) {
+    return this.books.remove(book);
   }
 }
