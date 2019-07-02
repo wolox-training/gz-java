@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import wolox.training.exceptions.BookAlreadyOwnedException;
 
 @Entity
 public class Users {
@@ -70,5 +71,15 @@ public class Users {
 
   public List<Book> getBooks() {
     return (List<Book>) Collections.unmodifiableList(this.books);
+  }
+
+  public void addBook(Book book) throws BookAlreadyOwnedException {
+    if (this.books.contains(book))
+      throw new BookAlreadyOwnedException("Book already owned by this user.");
+    this.books.add(book);
+  }
+
+  public void removeBook(Book book) {
+    this.books.remove(book);
   }
 }
