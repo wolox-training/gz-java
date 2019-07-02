@@ -40,7 +40,7 @@ public class BookController {
     return bookRepository.findAll();
   }
 
-  @PostMapping("/")
+  @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public Book create(@RequestBody Book book) {
     return bookRepository.save(book);
