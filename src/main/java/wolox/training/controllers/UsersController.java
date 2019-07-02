@@ -1,5 +1,7 @@
 package wolox.training.controllers;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,7 @@ import wolox.training.repositories.UsersRepository;
 
 @RestController
 @RequestMapping("/api/users")
+@Api
 public class UsersController {
   @Autowired
   private UsersRepository usersRepository;
@@ -31,23 +34,27 @@ public class UsersController {
   private BookRepository bookRepository;
 
   @GetMapping
+  @ApiOperation(value = "Return all users.")
   public Iterable findAll() {
     return usersRepository.findAll();
   }
 
   @PostMapping
+  @ApiOperation(value = "Create a new user.")
   @ResponseStatus(HttpStatus.CREATED)
   public Users create(@RequestBody Users user) {
     return usersRepository.save(user);
   }
 
   @GetMapping("/{id}")
+  @ApiOperation(value = "Giving an id, returns the user.")
   @ResponseStatus(HttpStatus.ACCEPTED)
   public Users findOne(@PathVariable long id) throws UserNotFoundException {
     return usersRepository.findById(id).orElseThrow(UserNotFoundException::new);
   }
 
   @DeleteMapping("/{id}")
+  @ApiOperation(value = "Giving an id, delete the user.")
   @ResponseStatus(HttpStatus.ACCEPTED)
   public void delete(@PathVariable long id) throws UserNotFoundException {
     usersRepository.findById(id).orElseThrow(UserNotFoundException::new);
@@ -55,6 +62,7 @@ public class UsersController {
   }
 
   @PutMapping("/{id}")
+  @ApiOperation(value = "Giving an id and book info, update the user.")
   public Users update(@RequestBody Users user, @PathVariable long id) throws UserIdMismatchException {
     if (user.getId() != id) {
       throw new UserIdMismatchException();
@@ -63,6 +71,7 @@ public class UsersController {
   }
 
   @PostMapping("/{userId}/addBook/{bookId}")
+  @ApiOperation(value = "Giving a bookId and an userId, add the book to the user book collection.")
   public Users addBook(@PathVariable long userId, @PathVariable long bookId) throws UserNotFoundException, BookAlreadyOwnedException, BookNotFoundException {
     Users user = usersRepository.findById(userId).orElseThrow(UserNotFoundException::new);
     Book book = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);

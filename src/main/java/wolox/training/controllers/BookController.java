@@ -1,5 +1,7 @@
 package wolox.training.controllers;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import wolox.training.repositories.BookRepository;
 
 @RestController
 @RequestMapping("/api/books")
+@Api
 public class BookController {
 
   @Autowired
@@ -36,23 +39,27 @@ public class BookController {
   }
 
   @GetMapping
+  @ApiOperation(value = "Return all books.")
   public Iterable findAll() {
     return bookRepository.findAll();
   }
 
   @PostMapping
+  @ApiOperation(value = "Create a book.")
   @ResponseStatus(HttpStatus.CREATED)
   public Book create(@RequestBody Book book) {
     return bookRepository.save(book);
   }
 
   @GetMapping("/{id}")
+  @ApiOperation(value = "Giving an id, returns the book.")
   @ResponseStatus(HttpStatus.ACCEPTED)
   public Book findOne(@PathVariable long id) throws BookNotFoundException {
     return bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
   }
 
   @DeleteMapping("/{id}")
+  @ApiOperation(value = "Giving an id, delete the book.")
   @ResponseStatus(HttpStatus.ACCEPTED)
   public void delete(@PathVariable long id) throws BookNotFoundException {
     bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
@@ -60,6 +67,7 @@ public class BookController {
   }
 
   @PutMapping("/{id}")
+  @ApiOperation(value = "Giving an id and book info, update the book.")
   public Book update(@RequestBody Book book, @PathVariable long id) throws BookNotFoundException, BookIdMismatchException {
     if (book.getId() != id) {
       throw new BookIdMismatchException();
