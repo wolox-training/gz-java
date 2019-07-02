@@ -20,7 +20,7 @@ public class Users {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private int id;
+  private long id;
 
   @Column(nullable = false)
   private String username;
@@ -41,7 +41,7 @@ public class Users {
     this.books = new Vector<Book>();
   }
 
-  public int getId() {
+  public long getId() {
     return this.id;
   }
 
@@ -75,7 +75,7 @@ public class Users {
 
   public void addBook(Book book) throws BookAlreadyOwnedException {
     if (this.books.contains(book))
-      throw new BookAlreadyOwnedException("Book already owned by this user.");
+      throw new BookAlreadyOwnedException();
     this.books.add(book);
   }
 
