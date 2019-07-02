@@ -44,6 +44,10 @@ public class Book {
 
   }
 
+  public long getId() {
+    return this.id;
+  }
+
   public String getGenre() {
     return this.genre;
   }
