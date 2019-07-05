@@ -1,22 +1,32 @@
-package wolox.training;
+package wolox.training.controllers;
+
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
 import java.util.Optional;
 import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import wolox.training.exceptions.BookAlreadyOwnedException;
 import wolox.training.models.Book;
 import wolox.training.models.Users;
 import wolox.training.repositories.UsersRepository;
 
-@DataJpaTest
+@RunWith(SpringRunner.class)
+@WebMvcTest(UsersController.class)
 public class UsersControllerTests {
   @Autowired
   private MockMvc mvc;
@@ -46,8 +56,13 @@ public class UsersControllerTests {
   }
 
   @Test
-  public void whenCreateUser_thenUserIsPersisted() {
-    // Mockito.when(usersRepository.findById(1L)).thenReturn(testUser);
-
+  public void whenFindOne_thenUserIsReturned() throws Exception {
+    Mockito.when(usersRepository.findById(1L)).thenReturn(Optional.of(testUser));
+    mvc.perform(get("/api/users/1")
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json(
+            "{\"id\": 0, \"username\": \"gzamudio\", \"name\": \"Gonzalo Zamudio\", \"birthday\": \"1990-01-09\" }"
+        ));
   }
 }
