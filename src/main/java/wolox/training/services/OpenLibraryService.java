@@ -6,9 +6,11 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Vector;
+import javax.validation.constraints.Null;
 import netscape.javascript.JSObject;
 import org.json.JSONArray;
 import org.springframework.http.MediaType;
+import wolox.training.exceptions.NullValueException;
 import wolox.training.models.Book;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,7 +45,7 @@ public final class OpenLibraryService {
     return json.toString();
   }
 
-  private static Book parse(String response, String isbn) throws JSONException {
+  private static Book parse(String response, String isbn) throws JSONException, NullValueException {
     JSONObject bookJson = new JSONObject(response).getJSONObject(new StringBuilder().append(_isbnParam).append(isbn).toString());
     Book book = new Book();
     book.setIsbn(isbn);
