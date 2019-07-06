@@ -4,6 +4,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import jdk.nashorn.internal.parser.JSONParser;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -88,13 +90,13 @@ public class BookController {
   }
 
   @GetMapping("/findByIsbn/{isbn}")
-  @ApiOperation(value = "Giving an isbn, returns the asociated book.")
+  @ApiOperation(value = "Giving an isbn, returns the related book.")
   @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "Book succesfully retrieved"),
+      @ApiResponse(code = 200, message = "Book successfully retrieved"),
       @ApiResponse(code = 201, message = "The book does not exists on DB, but it was created with OpenLibraryService information"),
       @ApiResponse(code = 404, message = "The book does not exists.")
   })
-  public ResponseEntity<Book> findByIsbn(String isbn) {
+  public ResponseEntity<Book> findByIsbn(@PathVariable String isbn) {
     Book book = bookRepository.findByIsbn(isbn);
     if (book == null) {
       book = OpenLibraryService.bookInfo(isbn);
@@ -106,5 +108,4 @@ public class BookController {
     }
     return new ResponseEntity(book, HttpStatus.OK);
   }
-
 }
