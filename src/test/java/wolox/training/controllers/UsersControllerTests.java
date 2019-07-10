@@ -6,8 +6,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 import java.util.Optional;
-import org.aspectj.lang.annotation.Before;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import wolox.training.exceptions.BookAlreadyOwnedException;
 import wolox.training.models.Book;
 import wolox.training.models.Users;
+import wolox.training.repositories.BookRepository;
 import wolox.training.repositories.UsersRepository;
 
 @RunWith(SpringRunner.class)
@@ -29,10 +30,13 @@ public class UsersControllerTests {
 
   @MockBean
   private UsersRepository usersRepository;
+  @MockBean
+  private BookRepository booksRepository;
+
   private Users testUser;
   private Book testBook;
 
-  @Before(value = "")
+  @Before
   public void setUp() throws BookAlreadyOwnedException {
     testBook = new Book();
     testBook.setAuthor("Eduardo Anguita");
@@ -56,9 +60,14 @@ public class UsersControllerTests {
     Mockito.when(usersRepository.findById(1L)).thenReturn(Optional.of(testUser));
     mvc.perform(get("/api/users/1")
         .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
+        .andExpect(status().isAccepted())
         .andExpect(content().json(
-            "{\"id\": 0, \"username\": \"gzamudio\", \"name\": \"Gonzalo Zamudio\", \"birthday\": \"1990-01-09\" }"
+            "{\"id\": 0, \"username\": \"gzamudio\", \"name\": \"Gonzalo Zamudio\", "
+                + "\"birthday\": \"1990-01-09\", \"books\": [{\"id\": 0, \"genre\": \"Historia\", "
+                + "\"author\": \"Eduardo Anguita\", \"image\": \"image.png\","
+                + "\"title\": \"La Voluntad. Una historia de la militancia revolucionaria en la Argentina\","
+                + "\"subtitle\":\"La Patria Peronista\", \"publisher\": \"Booket\", \"year\": \"2006\","
+                + "\"pages\": 560, \"isbn\": \"9789875800717\", \"users\": \"[]\"}]}"
         ));
   }
 }
