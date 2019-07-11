@@ -5,7 +5,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.Vector;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import wolox.training.exceptions.BookAlreadyOwnedException;
+import wolox.training.exceptions.UserNotFoundException;
 import wolox.training.models.Book;
 import wolox.training.models.Users;
 import wolox.training.repositories.BookRepository;
@@ -47,7 +50,7 @@ public class UsersControllerTests {
     testBook.setYear("2006");
     testBook.setPublisher("Booket");
     testBook.setSubtitle("La Patria Peronista");
-    testBook.setTitle("La Voluntad. Una historia de la militancia revolucionaria en la Argentina");
+    testBook.setTitle("La Voluntad");
     testUser = new Users();
     testUser.setUsername("gzamudio");
     testUser.setName("Gonzalo Zamudio");
@@ -65,9 +68,35 @@ public class UsersControllerTests {
             "{\"id\": 0, \"username\": \"gzamudio\", \"name\": \"Gonzalo Zamudio\", "
                 + "\"birthday\": \"1990-01-09\", \"books\": [{\"id\": 0, \"genre\": \"Historia\", "
                 + "\"author\": \"Eduardo Anguita\", \"image\": \"image.png\","
-                + "\"title\": \"La Voluntad. Una historia de la militancia revolucionaria en la Argentina\","
+                + "\"title\": \"La Voluntad\","
                 + "\"subtitle\":\"La Patria Peronista\", \"publisher\": \"Booket\", \"year\": \"2006\","
-                + "\"pages\": 560, \"isbn\": \"9789875800717\", \"users\": \"[]\"}]}"
+                + "\"pages\": 560, \"isbn\": \"9789875800717\"}]}"
+        ));
+  }
+
+  @Test
+  public void whenFindOne_thenUserIsNotFound() throws Exception {
+    Mockito.when(usersRepository.findById(1L)).thenReturn(Optional.of(testUser));
+    mvc.perform(get("/api/users/2")
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void whenFindAll_thenUsersAreReturned() throws Exception {
+    List<Users> userList = new Vector<Users>();
+    userList.add(testUser);
+    Mockito.when(usersRepository.findAll()).thenReturn(userList);
+    mvc.perform(get("/api/users")
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json(
+            "[{\"id\": 0, \"username\": \"gzamudio\", \"name\": \"Gonzalo Zamudio\", "
+                + "\"birthday\": \"1990-01-09\", \"books\": [{\"id\": 0, \"genre\": \"Historia\", "
+                + "\"author\": \"Eduardo Anguita\", \"image\": \"image.png\","
+                + "\"title\": \"La Voluntad\","
+                + "\"subtitle\":\"La Patria Peronista\", \"publisher\": \"Booket\", \"year\": \"2006\","
+                + "\"pages\": 560, \"isbn\": \"9789875800717\"}]}]"
         ));
   }
 }
