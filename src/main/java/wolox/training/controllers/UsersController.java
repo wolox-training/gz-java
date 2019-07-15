@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiResponses;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,7 +47,8 @@ public class UsersController {
   @PostMapping
   @ApiOperation(value = "Create a new user.")
   @ApiResponses(value = {
-      @ApiResponse(code = 201, message = "User successfully created.")
+      @ApiResponse(code = 201, message = "User successfully created."),
+      @ApiResponse(code = 400, message = "User cannot be created. Some fields cannot be null.")
   })
   @ResponseStatus(HttpStatus.CREATED)
   public Users create(@RequestBody Users user) {
@@ -77,7 +79,7 @@ public class UsersController {
   }
 
   @PutMapping("/{id}")
-  @ApiOperation(value = "Giving an id and book info, update the user.")
+  @ApiOperation(value = "Giving an id and user info, update the user.")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "User successfully updated."),
       @ApiResponse(code = 400, message = "The id on the body does not match with the id received."),

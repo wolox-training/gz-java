@@ -1,6 +1,9 @@
 package wolox.training.controllers;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -19,7 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import wolox.training.exceptions.BookAlreadyOwnedException;
-import wolox.training.exceptions.UserNotFoundException;
 import wolox.training.models.Book;
 import wolox.training.models.Users;
 import wolox.training.repositories.BookRepository;
@@ -28,6 +30,7 @@ import wolox.training.repositories.UsersRepository;
 @RunWith(SpringRunner.class)
 @WebMvcTest(UsersController.class)
 public class UsersControllerTests {
+
   @Autowired
   private MockMvc mvc;
 
@@ -98,5 +101,102 @@ public class UsersControllerTests {
                 + "\"subtitle\":\"La Patria Peronista\", \"publisher\": \"Booket\", \"year\": \"2006\","
                 + "\"pages\": 560, \"isbn\": \"9789875800717\"}]}]"
         ));
+  }
+
+  @Test
+  public void whenCreateUser_thenUserIsCreated() throws Exception {
+    String json = "{\"username\": \"gzamudio\", \"name\": \"Gonzalo Zamudio\", "
+        + "\"birthday\": \"1990-01-09\"}";
+    mvc.perform(post("/api/users")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(json))
+        .andExpect(status().isCreated());
+  }
+
+  @Test
+  public void whenCreateUserWithNullValues_thenUserIsNotCreated() throws Exception {
+    mvc.perform((post("api/users")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\"username\": \"gzamudio\", \"name\": \"Gonzalo Zamudio\"}")))
+        .andExpect(status().isNotFound());
+    mvc.perform((post("api/users")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\"name\": \"Gonzalo Zamudio\", \"birthday\": \"1990-01-09\"}")))
+        .andExpect(status().isNotFound());
+    mvc.perform((post("api/users")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\"username\": \"gzamudio\", \"birthday\": \"1990-01-09\"}")))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void whenUpdateUser_thenUserIsUpdated() throws Exception {
+    Mockito.when(usersRepository.findById(1L)).thenReturn(Optional.of(testUser));
+    String json = "{\"id\": 1, \"username\": \"gzamudio\", \"name\": \"Gonzalo Matias Zamudio\", "
+        + "\"birthday\": \"1990-01-09\"}";
+    mvc.perform(put("/api/users/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(json))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  public void whenUpdateUserWithIdMismatch_thenUserIsNotUpdated() throws Exception {
+    Mockito.when(usersRepository.findById(1L)).thenReturn(Optional.of(testUser));
+    String json = "{\"id\": 1, \"username\": \"gzamudio\", \"name\": \"Gonzalo Matias Zamudio\", "
+        + "\"birthday\": \"1990-01-09\"}";
+    mvc.perform(put("/api/users/2")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(json))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  public void whenUpdateUserWithInvalidId_thenUserIsNotFound() throws Exception {
+    Mockito.when(usersRepository.findById(1L)).thenReturn(Optional.of(testUser));
+    String updateJson =
+        "{\"id\": 2, \"username\": \"gzamudio\", \"name\": \"Gonzalo Matias Zamudio\", "
+            + "\"birthday\": \"1990-01-09\"}";
+    mvc.perform(put("/api/users/2")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(updateJson))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void whenDeleteUser_thenUserIsDeleted() throws Exception {
+    Mockito.when(usersRepository.findById(1L)).thenReturn(Optional.of(testUser));
+    mvc.perform(delete("/api/users/1"))
+        .andExpect(status().isAccepted());
+  }
+
+  @Test
+  public void whenDeleteNonExistingUser_thenUserIsNotFound() throws Exception {
+    Mockito.when(usersRepository.findById(1L)).thenReturn(Optional.of(testUser));
+    mvc.perform(delete("/api/users/2"))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void whenAddRepeatedBookToUser_thenBookIsNotAdded() throws Exception {
+    Mockito.when(usersRepository.findById(1L)).thenReturn(Optional.of(testUser));
+    Mockito.when(booksRepository.findById(1L)).thenReturn(Optional.of(testBook));
+    mvc.perform(post("/api/users/1/addBook/1"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  public void whenAddNonExistingBookToUser_thenBookIsNotAdded() throws Exception {
+    Mockito.when(usersRepository.findById(1L)).thenReturn(Optional.of(testUser));
+    mvc.perform(post("/api/users/1/addBook/3"))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void whenAddBookToNonExistingUser_thenBookIsNotAdded() throws Exception {
+    Mockito.when(usersRepository.findById(1L)).thenReturn(Optional.of(testUser));
+    Mockito.when(booksRepository.findById(1L)).thenReturn(Optional.of(testBook));
+    mvc.perform(post("/api/users/2/addBook/1"))
+        .andExpect(status().isNotFound());
   }
 }
