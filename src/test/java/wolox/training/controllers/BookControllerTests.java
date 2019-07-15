@@ -7,13 +7,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +20,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import wolox.training.exceptions.BookAlreadyOwnedException;
 import wolox.training.models.Book;
-import wolox.training.models.Users;
 import wolox.training.repositories.BookRepository;
-import wolox.training.repositories.UsersRepository;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(BookController.class)
