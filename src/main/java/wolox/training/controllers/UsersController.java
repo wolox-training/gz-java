@@ -106,4 +106,20 @@ public class UsersController {
     user.addBook(book);
     return usersRepository.save(user);
   }
+
+  @DeleteMapping("/{userId}/removeBook/{bookId}")
+  @ApiOperation(value = "Giving a bookId and an userId, remove the book to the user book collection if exists.")
+  @ApiResponses(value = {
+      @ApiResponse(code = 202, message = "Book successfully removed."),
+      @ApiResponse(code = 404, message = "The book or the user do not exists.")
+  })
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  public Users removeBook(@PathVariable long userId, @PathVariable long bookId) throws UserNotFoundException, BookNotFoundException {
+    Users user = usersRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    Book book = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
+    if (!user.getBooks().contains(book))
+      throw new BookNotFoundException("The book do not exists in the user collection");
+    user.removeBook(book);
+    return usersRepository.save(user);
+  }
 }

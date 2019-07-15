@@ -1,5 +1,7 @@
 package wolox.training.models;
 
+import com.google.common.base.Preconditions;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
@@ -68,6 +70,7 @@ public class Book {
   }
 
   public void setImage(String image) {
+    Preconditions.checkArgument(image != null && !image.isEmpty());
     this.image = image;
   }
 
@@ -76,6 +79,7 @@ public class Book {
   }
 
   public void setTitle(String title) {
+    Preconditions.checkArgument(title != null && !title.isEmpty());
     this.title = title;
   }
 
@@ -84,6 +88,7 @@ public class Book {
   }
 
   public void setSubtitle(String subtitle) {
+    Preconditions.checkArgument(subtitle != null && !subtitle.isEmpty());
     this.subtitle = subtitle;
   }
 
@@ -92,6 +97,7 @@ public class Book {
   }
 
   public void setPublisher(String publisher) {
+    Preconditions.checkArgument(publisher != null && !publisher.isEmpty());
     this.publisher = publisher;
   }
 
@@ -100,6 +106,7 @@ public class Book {
   }
 
   public void setYear(String year) {
+    Preconditions.checkArgument(year != null && !year.isEmpty());
     this.year = year;
   }
 
@@ -108,6 +115,7 @@ public class Book {
   }
 
   public void setPages(int pages) {
+    Preconditions.checkArgument(pages > 0);
     this.pages = pages;
   }
 
@@ -116,6 +124,7 @@ public class Book {
   }
 
   public void setIsbn(String isbn) {
+    Preconditions.checkArgument(isbn != null && !isbn.isEmpty());
     this.isbn = isbn;
   }
 
