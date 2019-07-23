@@ -5,7 +5,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +21,7 @@ import wolox.training.exceptions.BookIdMismatchException;
 import wolox.training.exceptions.BookNotFoundException;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
+import wolox.training.services.OpenLibraryService;
 
 @RestController
 @RequestMapping("/api/books")
@@ -83,5 +86,31 @@ public class BookController {
     }
     bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
     return bookRepository.save(book);
+  }
+
+  @GetMapping("/findByIsbn/{isbn}")
+  @ApiOperation(value = "Giving an isbn, returns the related book.")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Book successfully retrieved"),
+      @ApiResponse(code = 201, message = "The book does not exists on DB, but it was created with OpenLibraryService information"),
+      @ApiResponse(code = 400, message = "The book exists on OpenLibrary service but some not nullable fields are missing"),
+      @ApiResponse(code = 404, message = "The book does not exists.")
+  })
+  public ResponseEntity<Book> findByIsbn(@PathVariable String isbn) {
+    Book book = bookRepository.findByIsbn(isbn);
+    if (book == null) {
+      book = OpenLibraryService.bookInfo(isbn);
+      if (book == null) {
+        return new ResponseEntity("{ message: \"There is no book with the received isbn\"}" , HttpStatus.NOT_FOUND);
+      }
+      try {
+        bookRepository.save(book);
+        return new ResponseEntity(book, HttpStatus.CREATED);
+      }
+      catch (DataIntegrityViolationException e) {
+        return new ResponseEntity("{ message: \"The book exists on OpenLibrary service but some not nullable fields are missing.\"}", HttpStatus.BAD_REQUEST);
+      }
+    }
+    return new ResponseEntity(book, HttpStatus.OK);
   }
 }
