@@ -1,7 +1,6 @@
 package wolox.training.models;
 
 import com.google.common.base.Preconditions;
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
@@ -47,10 +46,10 @@ public class Book {
   private String isbn;
 
   @ManyToMany(mappedBy = "books")
-  private List<Users> users;
+  private List<User> users;
 
   public Book() {
-    this.users = new Vector<Users>();
+    this.users = new Vector<User>();
   }
 
   public long getId() {
@@ -136,7 +135,7 @@ public class Book {
     this.author = author;
   }
 
-  public List<Users> getUsers() {
-    return (List<Users>) Collections.unmodifiableList(this.users);
+  public List<User> getUsers() {
+    return (List<User>) Collections.unmodifiableList(this.users);
   }
 }

@@ -11,7 +11,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
-import wolox.training.repositories.UsersRepository;
+import wolox.training.repositories.UserRepository;
 
 @AutoConfigureTestDatabase(replace=Replace.NONE)
 @DataJpaTest
@@ -21,43 +21,43 @@ public class UserTest {
   private TestEntityManager userManager;
 
   @Autowired
-  private UsersRepository userRepository;
+  private UserRepository userRepository;
 
   @Test
   public void whenUserIsCreated_thenUserIsPersisted() {
-    Users user = getUser();
-    Users persistedUser = userManager.persistAndFlush(user);
-    Users foundUser = userRepository.findById(user.getId()).get();
+    User user = getUser();
+    User persistedUser = userManager.persistAndFlush(user);
+    User foundUser = userRepository.findById(user.getId()).get();
     assert (foundUser).equals(persistedUser);
   }
 
   @Test(expected = PersistenceException.class)
   public void whenCreateUserWithNullValues_thenUserIsNotPersisted() {
-    Users user = new Users();
-    Users persistedUser = userManager.persistAndFlush(user);
+    User user = new User();
+    User persistedUser = userManager.persistAndFlush(user);
   }
 
   @Test
   public void whenUpdateUser_thenUserIsUpdated() {
-    Users user = getUser();
-    Users persistedUser = userManager.persistAndFlush(user);
+    User user = getUser();
+    User persistedUser = userManager.persistAndFlush(user);
     persistedUser.setName("Gonzalo Matías Zamudio");
     userManager.merge(persistedUser);
-    Users foundUser = userRepository.findById(user.getId()).get();
+    User foundUser = userRepository.findById(user.getId()).get();
     assert ("Gonzalo Matías Zamudio").equals(foundUser.getName());
   }
 
   @Test
   public void whenDeleteUser_thenUserIsDeleted() {
-    Users user = getUser();
+    User user = getUser();
     userManager.persistAndFlush(user);
     userManager.remove(user);
-    Optional<Users> foundUser = userRepository.findById(user.getId());
+    Optional<User> foundUser = userRepository.findById(user.getId());
     assert (!foundUser.isPresent());
   }
 
-  private Users getUser() {
-    Users user = new Users();
+  private User getUser() {
+    User user = new User();
     user.setName("Gonzalo Zamudio");
     user.setUsername("gzamudio");
     user.setBirthday(LocalDate.parse("1990-01-09"));
