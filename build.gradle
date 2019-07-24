@@ -38,8 +38,6 @@ dependencies {
 	compile group: 'com.google.guava', name: 'guava', version: '27.0-jre'
 	compile 'org.springframework.boot:spring-boot-starter-security'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.9'
-	compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
-
 }
 
 test {
