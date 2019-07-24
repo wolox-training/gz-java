@@ -4,8 +4,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.security.Principal;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -126,5 +129,20 @@ public class UserController {
       throw new BookNotFoundException("The book do not exists in the user collection");
     user.removeBook(book);
     return userRepository.save(user);
+  }
+
+  @GetMapping("/me")
+  @ApiOperation(value = "Return the authenticated user.")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "User successfully retrieved."),
+      @ApiResponse(code = 200, message = "There is no logged user."),
+  })
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseEntity<User> me(HttpServletRequest request) {
+    Principal principal = request.getUserPrincipal();
+    if (principal == null)
+      return new ResponseEntity("{ message: \"There is no authenticated user. \"}", HttpStatus.NOT_FOUND);
+    User user = userRepository.findByUsername(principal.getName());
+    return new ResponseEntity<>(user, HttpStatus.OK);
   }
 }
