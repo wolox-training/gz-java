@@ -5,6 +5,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -135,7 +138,7 @@ public class UserController {
   @ApiOperation(value = "Return the authenticated user.")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "User successfully retrieved."),
-      @ApiResponse(code = 200, message = "There is no logged user."),
+      @ApiResponse(code = 404, message = "There is no logged user."),
   })
   @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<User> me(HttpServletRequest request) {
@@ -144,5 +147,13 @@ public class UserController {
       return new ResponseEntity("{ message: \"There is no authenticated user. \"}", HttpStatus.NOT_FOUND);
     User user = userRepository.findByUsername(principal.getName());
     return new ResponseEntity<>(user, HttpStatus.OK);
+  }
+
+  @GetMapping("/find/{startDate}/{endDate}/{name}")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Users successfully retrieved")
+  })
+  public List<User> find(@PathVariable String startDate, @PathVariable String endDate, @PathVariable String name) {
+    return userRepository.findByNameContainingIgnoreCaseAndBirthdayBetween(name, LocalDate.parse(startDate), LocalDate.parse(endDate));
   }
 }

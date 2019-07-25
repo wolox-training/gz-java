@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -112,5 +113,15 @@ public class BookController {
       }
     }
     return new ResponseEntity(book, HttpStatus.OK);
+  }
+
+  @GetMapping("find/{genre}/{publisher}/{year}")
+  @ApiOperation(value = "Giving a genre, publisher, year, returns the related books")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Books successfully retrieved")
+  })
+  @ResponseStatus(HttpStatus.OK)
+  public List<Book> find(@PathVariable String genre, @PathVariable String publisher, @PathVariable String year) {
+    return bookRepository.findByGenreAndPublisherAndYear(genre, publisher, year);
   }
 }
