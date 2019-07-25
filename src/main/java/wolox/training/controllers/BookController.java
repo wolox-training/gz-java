@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import wolox.training.exceptions.BookIdMismatchException;
@@ -123,5 +124,21 @@ public class BookController {
   @ResponseStatus(HttpStatus.OK)
   public List<Book> find(@PathVariable String genre, @PathVariable String publisher, @PathVariable String year) {
     return bookRepository.findByGenreAndPublisherAndYear(genre, publisher, year);
+  }
+
+  @GetMapping("getAll")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Books successfully retrieved")
+  })
+  public List<Book> getAll(@RequestParam(required = false, defaultValue = "") String genre,
+    @RequestParam(required = false, defaultValue = "") String author,
+    @RequestParam(required = false, defaultValue = "") String image,
+    @RequestParam(required = false, defaultValue = "") String title,
+    @RequestParam(required = false, defaultValue = "") String subtitle,
+    @RequestParam(required = false, defaultValue = "") String publisher,
+    @RequestParam(required = false, defaultValue = "") String year,
+    @RequestParam(required = false, defaultValue = "") String isbn,
+    @RequestParam(required = false, defaultValue = "0") int pages) {
+    return bookRepository.getAll(genre, author, image, title, subtitle, publisher, year, isbn, pages);
   }
 }
