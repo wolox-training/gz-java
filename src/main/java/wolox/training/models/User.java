@@ -1,5 +1,6 @@
 package wolox.training.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.Preconditions;
 import java.time.LocalDate;
@@ -62,6 +63,7 @@ public class User {
     this.password = password;
   }
 
+  @JsonIgnore
   public String getPassword() {
     return this.password;
   }

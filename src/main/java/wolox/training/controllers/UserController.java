@@ -93,8 +93,11 @@ public class UserController {
     if (user.getId() != id) {
       throw new UserIdMismatchException();
     }
-    userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-    return userRepository.save(user);
+    User userToUpdate = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+    userToUpdate.setName(user.getName());
+    userToUpdate.setBirthday(user.getBirthday());
+    userToUpdate.setUsername(user.getUsername());
+    return userRepository.save(userToUpdate);
   }
 
   @PostMapping("/{userId}/addBook/{bookId}")
