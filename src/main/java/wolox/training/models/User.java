@@ -1,5 +1,6 @@
 package wolox.training.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.Preconditions;
 import java.time.LocalDate;
@@ -13,10 +14,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 import wolox.training.exceptions.BookAlreadyOwnedException;
 
 @Entity
-public class Users {
+@Table(name="users")
+public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -31,11 +34,14 @@ public class Users {
   @Column(nullable = false)
   private LocalDate birthday;
 
+  @Column(nullable = false)
+  private String password;
+
   @ManyToMany(cascade = { CascadeType.REFRESH, CascadeType.MERGE })
   @JsonIgnoreProperties("users")
   private List<Book> books;
 
-  public Users() {
+  public User() {
     this.books = new Vector<Book>();
   }
 
@@ -50,6 +56,16 @@ public class Users {
   public void setUsername(String username) {
     Preconditions.checkArgument(username != null && !username.isEmpty());
     this.username = username;
+  }
+
+  public void setPassword(String password) {
+    Preconditions.checkArgument(password != null && !password.isEmpty());
+    this.password = password;
+  }
+
+  @JsonIgnore
+  public String getPassword() {
+    return this.password;
   }
 
   public LocalDate getBirthday(){

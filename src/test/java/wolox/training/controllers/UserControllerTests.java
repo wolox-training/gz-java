@@ -23,23 +23,23 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import wolox.training.exceptions.BookAlreadyOwnedException;
 import wolox.training.models.Book;
-import wolox.training.models.Users;
+import wolox.training.models.User;
 import wolox.training.repositories.BookRepository;
-import wolox.training.repositories.UsersRepository;
+import wolox.training.repositories.UserRepository;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(UsersController.class)
-public class UsersControllerTests {
+@WebMvcTest(UserController.class)
+public class UserControllerTests {
 
   @Autowired
   private MockMvc mvc;
 
   @MockBean
-  private UsersRepository usersRepository;
+  private UserRepository usersRepository;
   @MockBean
   private BookRepository booksRepository;
 
-  private Users testUser;
+  private User testUser;
   private Book testBook;
 
   @Before
@@ -54,7 +54,7 @@ public class UsersControllerTests {
     testBook.setPublisher("Booket");
     testBook.setSubtitle("La Patria Peronista");
     testBook.setTitle("La Voluntad");
-    testUser = new Users();
+    testUser = new User();
     testUser.setUsername("gzamudio");
     testUser.setName("Gonzalo Zamudio");
     testUser.setBirthday(LocalDate.parse("1990-01-09"));
@@ -87,7 +87,7 @@ public class UsersControllerTests {
 
   @Test
   public void whenFindAll_thenUsersAreReturned() throws Exception {
-    List<Users> userList = new Vector<Users>();
+    List<User> userList = new Vector<User>();
     userList.add(testUser);
     Mockito.when(usersRepository.findAll()).thenReturn(userList);
     mvc.perform(get("/api/users")

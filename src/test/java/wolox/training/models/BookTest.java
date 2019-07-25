@@ -1,6 +1,5 @@
 package wolox.training.models;
 
-import java.time.LocalDate;
 import java.util.Optional;
 import javax.persistence.PersistenceException;
 import org.junit.Test;
@@ -12,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 import wolox.training.repositories.BookRepository;
-import wolox.training.repositories.UsersRepository;
 
 @AutoConfigureTestDatabase(replace=Replace.NONE)
 @DataJpaTest
