@@ -100,6 +100,23 @@ public class UserController {
     return userRepository.save(userToUpdate);
   }
 
+  @PutMapping("/changePassword/{id}")
+  @ApiOperation(value = "Giving an id and a new password, update the user.")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "User password successfully updated."),
+      @ApiResponse(code = 400, message = "The id on the body does not match with the id received."),
+      @ApiResponse(code = 404, message = "The user does not exists.")
+  })
+  @ResponseStatus(HttpStatus.OK)
+  public User changePassword(@RequestBody User user, @PathVariable long id) throws UserIdMismatchException, UserNotFoundException {
+    if (user.getId() != id) {
+      throw new UserIdMismatchException();
+    }
+    User userToUpdate = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+    userToUpdate.setPassword(encoder.encode(user.getPassword()));
+    return userRepository.save(userToUpdate);
+  }
+
   @PostMapping("/{userId}/addBook/{bookId}")
   @ApiOperation(value = "Giving a bookId and an userId, add the book to the user book collection.")
   @ApiResponses(value = {
