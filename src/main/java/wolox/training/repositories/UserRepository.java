@@ -11,7 +11,7 @@ import wolox.training.models.User;
 public interface UserRepository extends JpaRepository<User, Long> {
   User findByUsername(String username);
 
-  @Query("select u from User u where u.name like %:name% and (u.birthday >= :startDate and u.birthday <= :endDate) or u.birthday is null")
+  @Query("select u from User u where u.name like %:name% and ((u.birthday >= :startDate and u.birthday <= :endDate) or u.birthday is null)")
   List<User> findByNameContainingIgnoreCaseAndBirthdayBetween(@Param("name") String name,
       @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }
