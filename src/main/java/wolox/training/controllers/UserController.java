@@ -19,10 +19,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import wolox.training.exceptions.BookAlreadyOwnedException;
 import wolox.training.exceptions.BookNotFoundException;
+import wolox.training.exceptions.PasswordMismatchException;
 import wolox.training.exceptions.UserIdMismatchException;
 import wolox.training.exceptions.UserNotFoundException;
 import wolox.training.models.Book;
 import wolox.training.models.User;
+import wolox.training.models.UserDTO;
 import wolox.training.repositories.BookRepository;
 import wolox.training.repositories.UserRepository;
 
@@ -100,20 +102,20 @@ public class UserController {
     return userRepository.save(userToUpdate);
   }
 
-  @PutMapping("/changePassword/{id}")
+  @PutMapping("/{id}/changePassword")
   @ApiOperation(value = "Giving an id and a new password, update the user.")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "User password successfully updated."),
-      @ApiResponse(code = 400, message = "The id on the body does not match with the id received."),
+      @ApiResponse(code = 400, message = "The password received do not match with the current user password."),
       @ApiResponse(code = 404, message = "The user does not exists.")
   })
   @ResponseStatus(HttpStatus.OK)
-  public User changePassword(@RequestBody User user, @PathVariable long id) throws UserIdMismatchException, UserNotFoundException {
-    if (user.getId() != id) {
-      throw new UserIdMismatchException();
-    }
+  public User changePassword(@RequestBody UserDTO user, @PathVariable long id)
+      throws UserNotFoundException, PasswordMismatchException {
     User userToUpdate = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-    userToUpdate.setPassword(encoder.encode(user.getPassword()));
+    if (!encoder.matches(user.getCurrentPassword(), userToUpdate.getPassword()))
+      throw new PasswordMismatchException();
+    userToUpdate.setPassword(encoder.encode(user.getNewPassword()));
     return userRepository.save(userToUpdate);
   }
 
