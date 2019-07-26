@@ -7,6 +7,8 @@ import io.swagger.annotations.ApiResponses;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,8 +39,8 @@ public class BookController {
   @ApiOperation(value = "Return all books.")
   @ApiResponse(code = 200, message = "Books successfully retrieved.")
   @ResponseStatus(HttpStatus.OK)
-  public Iterable findAll() {
-    return bookRepository.findAll();
+  public Page<Book> findAll(Pageable pageable) {
+    return bookRepository.findAll(pageable);
   }
 
   @PostMapping
@@ -122,15 +124,16 @@ public class BookController {
       @ApiResponse(code = 200, message = "Books successfully retrieved")
   })
   @ResponseStatus(HttpStatus.OK)
-  public List<Book> find(@PathVariable String genre, @PathVariable String publisher, @PathVariable String year) {
-    return bookRepository.findByGenreAndPublisherAndYear(genre, publisher, year);
+  public Page<Book> find(@PathVariable String genre, @PathVariable String publisher,
+      @PathVariable String year, Pageable pageable) {
+    return bookRepository.findByGenreAndPublisherAndYear(genre, publisher, year, pageable);
   }
 
   @GetMapping("getAll")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "Books successfully retrieved")
   })
-  public List<Book> getAll(@RequestParam(required = false, defaultValue = "") String genre,
+  public Page<Book> getAll(@RequestParam(required = false, defaultValue = "") String genre,
     @RequestParam(required = false, defaultValue = "") String author,
     @RequestParam(required = false, defaultValue = "") String image,
     @RequestParam(required = false, defaultValue = "") String title,
@@ -138,7 +141,8 @@ public class BookController {
     @RequestParam(required = false, defaultValue = "") String publisher,
     @RequestParam(required = false, defaultValue = "") String year,
     @RequestParam(required = false, defaultValue = "") String isbn,
-    @RequestParam(required = false, defaultValue = "0") int pages) {
-    return bookRepository.getAll(genre, author, image, title, subtitle, publisher, year, isbn, pages);
+    @RequestParam(required = false, defaultValue = "0") int pages,
+      Pageable pageable) {
+    return bookRepository.getAll(genre, author, image, title, subtitle, publisher, year, isbn, pages, pageable);
   }
 }
