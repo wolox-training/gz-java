@@ -7,9 +7,10 @@ import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -50,8 +51,8 @@ public class UserController {
   @ApiOperation(value = "Return all users.")
   @ApiResponse(code = 200, message = "Users successfully retrieved.")
   @ResponseStatus(HttpStatus.OK)
-  public Iterable findAll() {
-    return userRepository.findAll();
+  public Page<User> findAll(Pageable pageable) {
+    return userRepository.findAll(pageable);
   }
 
   @PostMapping
@@ -175,7 +176,7 @@ public class UserController {
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "Users successfully retrieved")
   })
-  public List<User> find(@PathVariable String startDate, @PathVariable String endDate, @PathVariable String name) {
-    return userRepository.findByNameContainingIgnoreCaseAndBirthdayBetween(name, LocalDate.parse(startDate), LocalDate.parse(endDate));
+  public Page<User> find(@PathVariable String startDate, @PathVariable String endDate, @PathVariable String name, Pageable pageable) {
+    return userRepository.findByNameContainingIgnoreCaseAndBirthdayBetween(name, LocalDate.parse(startDate), LocalDate.parse(endDate), pageable);
   }
 }
